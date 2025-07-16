@@ -1,16 +1,55 @@
+version: "3.8"
+
 services:
   mt5:
     build:
       dockerfile: Dockerfile
-    container_name: mt5-ers
+    container_name: mt5-master
     volumes:
       - ./config:/config
     networks:
+      - traefik-public
       - default
     env_file:
       - .env
     restart: unless-stopped
+    labels:
+      # Enable Traefik reverse proxy
+      traefik.enable: true
+      traefik.docker.network: traefik-public
+
+      ########################################
+      # VNC Interface (Port 3000)
+      ########################################
+      traefik.http.routers.vnc-mt5b-http.rule: Host(`${VNC_DOMAIN}`)
+      traefik.http.routers.vnc-mt5b-http.entrypoints: http
+      traefik.http.routers.vnc-mt5b-http.middlewares: https-redirect
+
+      traefik.http.routers.vnc-mt5b-https.rule: Host(`${VNC_DOMAIN}`)
+      traefik.http.routers.vnc-mt5b-https.entrypoints: https
+      traefik.http.routers.vnc-mt5b-https.tls: true
+      traefik.http.routers.vnc-mt5b-https.tls.certresolver: le
+      traefik.http.routers.vnc-mt5b-https.service: vnc-mt5b-service
+
+      traefik.http.services.vnc-mt5b-service.loadbalancer.server.port: 3000
+
+      ########################################
+      # API Interface (Port 5001)
+      ########################################
+      traefik.http.routers.api-mt5b-http.rule: Host(`${API_DOMAIN}`)
+      traefik.http.routers.api-mt5b-http.entrypoints: http
+      traefik.http.routers.api-mt5b-http.middlewares: https-redirect
+
+      traefik.http.routers.api-mt5b-https.rule: Host(`${API_DOMAIN}`)
+      traefik.http.routers.api-mt5b-https.entrypoints: https
+      traefik.http.routers.api-mt5b-https.tls: true
+      traefik.http.routers.api-mt5b-https.tls.certresolver: le
+      traefik.http.routers.api-mt5b-https.service: api-mt5b-service
+
+      traefik.http.services.api-mt5b-service.loadbalancer.server.port: 5001
 
 networks:
   default:
     driver: bridge
+  traefik-public:
+    external: true

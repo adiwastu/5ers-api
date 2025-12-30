@@ -11,6 +11,12 @@ RUN mkdir -p /config/.wine && \
     chown -R abc:abc /config/.wine && \
     chmod -R 755 /config/.wine
 
+
+# Fix APT sources to use archive.debian.org and remove backports
+RUN sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list && \
+sed -i '/bullseye-backports/d' /etc/apt/sources.list && \
+echo "Acquire::Check-Valid-Until false;"> /etc/apt/apt.conf.d/99no-check-valid-until
+
 # Update package lists and upgrade packages
 RUN apt-get update && apt-get upgrade -y
 

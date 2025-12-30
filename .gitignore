@@ -1,0 +1,25 @@
+# --- Security ---
+.env
+.env.*
+*.pem
+secrets.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# --- IDEs (Optional but recommended) ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS Junk ---
+.DS_Store
+Thumbs.db
+config/
+config/
+config

@@ -5,8 +5,12 @@ services:
     build:
       dockerfile: Dockerfile
     container_name: mt5-master
+    environment:
+      - PUID=0
+      - PGID=0
     volumes:
       - ./config:/config
+      - ./app:/app
     networks:
       - traefik-public
       - default
